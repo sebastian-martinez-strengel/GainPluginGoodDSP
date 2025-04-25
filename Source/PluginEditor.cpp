@@ -1,33 +1,30 @@
 #include "PluginEditor.h"
 
-GainPluginGoodDSPAudioProcessorEditor::GainPluginGoodDSPAudioProcessorEditor (
-    GainPluginGoodDSPAudioProcessor& p)
+GainPluginGoodDSPEditor::GainPluginGoodDSPEditor (GainPluginGoodDSPAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    gainSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    gainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
-    gainSlider.setRange(0.0f, 2.0f, 0.01f);
-    gainSlider.setValue(*audioProcessor.gainParam);
-    gainSlider.onValueChange = [this]()
-    {
-        *audioProcessor.gainParam = gainSlider.getValue();
-    };
-
+    gainSlider.setSliderStyle(juce::Slider::Rotary);
+    gainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     addAndMakeVisible(gainSlider);
+
+    gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.parameters, "gain", gainSlider
+    );
+
     setSize (300, 300);
 }
 
-GainPluginGoodDSPAudioProcessorEditor::~GainPluginGoodDSPAudioProcessorEditor() {}
+GainPluginGoodDSPEditor::~GainPluginGoodDSPEditor() {}
 
-void GainPluginGoodDSPAudioProcessorEditor::paint (juce::Graphics& g)
+void GainPluginGoodDSPEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black);
     g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Gain", getLocalBounds(), juce::Justification::centredTop, 1);
+    g.setFont (20.0f);
+    g.drawFittedText ("Good DSP Gain", getLocalBounds(), juce::Justification::centred, 1);
 }
 
-void GainPluginGoodDSPAudioProcessorEditor::resized()
+void GainPluginGoodDSPEditor::resized()
 {
     gainSlider.setBounds(getLocalBounds().reduced(50));
 }
